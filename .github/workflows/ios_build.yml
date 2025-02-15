@@ -54,9 +54,22 @@ jobs:
           restore-keys: |
             pods-${{ runner.os }}-
 
+      # ✅ Ensure iOS Directory & Generate Podfile if Missing
+      - name: Ensure iOS directory & generate Podfile if missing
+        run: |
+          if [ ! -d "ios" ]; then
+            flutter create .
+          fi
+          if [ ! -f "ios/Podfile" ]; then
+            flutter pub get
+            cd ios && pod init && cd ..
+          fi
+
+      # ✅ Install CocoaPods Dependencies
       - name: Install CocoaPods dependencies
         run: |
           cd ios
+          test -f Podfile || pod init  # Ensure Podfile exists
           pod install --repo-update
 
       - name: Build iOS (No Codesign)
@@ -68,4 +81,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: build/ios/ipa/
+          path: build/ios/iphoneos/  # ✅ Corrected output path
