@@ -92,9 +92,9 @@ jobs:
 
 
 
-      - name: Upload iOS Build Artifacts
+      - name: Publish on GitHub Workflow
         uses: ncipollo/release-action@v1
         with:
           name: ios-build
-          artifacts: build/ios/iphoneos/
+          artifacts: build/ios/iphoneos/Runner.ipa
           tag: v1.0.${{ github.run_number }} 
