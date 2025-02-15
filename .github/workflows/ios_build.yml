@@ -6,7 +6,8 @@ on:
       - master  
 # iso job
 jobs:
-  build-ios:
+  build-ios: 
+    name: Build & Release Ipa
     runs-on: macos-latest  
     steps:
       - name: Checkout repository
@@ -124,6 +125,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Android
-          artifacts: "build/app/outputs/apk/release/*.apk"
+          artifacts: build/app/outputs/flutter-apk/app-release.apk
           tag: v1.0.${{ github.run_number }}
           token: ${{ secrets.IOS_BUILD }}
