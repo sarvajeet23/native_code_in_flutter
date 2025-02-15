@@ -84,17 +84,39 @@ jobs:
 
 
       # ✅ Upload the IPA file as an artifact
+    #   - name: Upload iOS Build Artifacts
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: ios-build
+    #       path: build/ios/iphoneos/Runner.app
+
+
+
+    #   - name: Publish on GitHub Workflow
+    #     uses: ncipollo/release-action@v1
+    #     with:
+    #       name: ios-build
+    #       artifacts: build/ios/iphoneos/Runner.app
+    #       tag: v1.0.${{ github.run_number }} 
+
+
+      # ✅ Create the IPA file manually
+      - name: Create IPA
+        run: |
+          mkdir -p build/ios/ipa
+          cd build/ios/iphoneos
+          zip -r ../ipa/Runner.ipa Runner.app
+
+      # ✅ Upload the IPA file as an artifact
       - name: Upload iOS Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: build/ios/iphoneos/Runner.app
+          path: build/ios/ipa/Runner.ipa
 
-
-
-      - name: Publish on GitHub Workflow
+      # ✅ Optional: Attach IPA to a GitHub release
+      - name: Push to Releases
         uses: ncipollo/release-action@v1
         with:
-          name: ios-build
-          artifacts: build/ios/iphoneos/Runner.app
-          tag: v1.0.${{ github.run_number }} 
+          artifacts: build/ios/ipa/Runner.ipa
+          tag: v1.0.${{ github.run_number }}
