@@ -15,7 +15,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.16.0'  # ✅ Explicit version to avoid "unable to determine version" error
 
       - name: Install dependencies
         run: flutter pub get
