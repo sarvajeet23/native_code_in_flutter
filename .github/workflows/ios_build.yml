@@ -71,16 +71,6 @@ jobs:
           cd ios
           test -f Podfile || pod init  # Ensure Podfile exists
           pod install --repo-update
-      # ✅ Build Android APK
-      - name: Build APK (Release)
-        run: flutter build apk --release
-
-      # ✅ Upload APK as Artifact
-      - name: Upload APK
-        uses: actions/upload-artifact@v1
-        with:
-          name: android-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Build iOS (No Codesign)
         env:
