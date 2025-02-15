@@ -3,12 +3,11 @@ name: iOS Build
 on:
   push:
     branches:
-      - main  # Change this if your branch name is different
+      - master  # Change this if your branch is different
 
 jobs:
   build-ios:
-    runs-on: macos-latest  # Use GitHub's macOS runner
-
+    runs-on: macos-latest  # Use GitHub macOS runner
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -16,11 +15,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'  # Use stable Flutter version
-          architecture: x64  # Ensures compatibility
-
-      - name: Verify Flutter version
-        run: flutter --version
+          flutter-version: 'stable'
 
       - name: Install dependencies
         run: flutter pub get
@@ -32,15 +27,12 @@ jobs:
           cd ..
 
       - name: Build iOS
-        run: flutter build ios --release
         env:
-          APP_STORE_TOKEN: ${{ secrets.ISO_BUILD }}  # Use the secret token
+          APP_STORE_TOKEN: ${{ secrets.ISO_BUILD }} 
+        run: flutter build ios --release
 
       - name: Upload iOS build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: ios-build
           path: build/ios/iphoneos
-
-      - name: Cleanup
-        run: flutter clean
