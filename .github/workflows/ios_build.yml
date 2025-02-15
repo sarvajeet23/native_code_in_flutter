@@ -1,13 +1,13 @@
-name: iOS Build
+name: Build iOS and Android
 
 on:
   push:
     branches:
-      - master  # Adjust based on your default branch
+      - master  
 
 jobs:
   build-ios:
-    runs-on: macos-latest  # Ensures macOS is used for iOS builds
+    runs-on: macos-latest  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
           cache: true
 
       - name: Check Flutter Version
-        run: flutter --version  # ✅ Debug step to check installed version
+        run: flutter --version 
 
       # ✅ Cache Dart & Flutter dependencies
       - name: Cache Flutter dependencies
@@ -42,8 +42,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Verify Dart Version
-        run: dart --version  # ✅ Debug step to confirm Dart version
+    #   - name: Verify Dart Version
+    #     run: dart --version  
 
       # ✅ Cache CocoaPods to speed up iOS builds
       - name: Cache CocoaPods
@@ -71,11 +71,42 @@ jobs:
           cd ios
           test -f Podfile || pod init  # Ensure Podfile exists
           pod install --repo-update
+      # ✅ Build Android APK
+      - name: Build APK (Release)
+        run: flutter build apk --release
+
+      # ✅ Upload APK as Artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Build iOS (No Codesign)
         env:
           APP_STORE_TOKEN: ${{ secrets.IOS_BUILD }}  # Ensure correct secret name
         run: flutter build ios --no-codesign
+
+      # ✅ Create the IPA file manually
+      - name: Create IPA
+        run: |
+          mkdir -p build/ios/ipa
+          cd build/ios/iphoneos
+          zip -r ../ipa/Runner.ipa Runner.app
+
+      # ✅ Upload the IPA file as an artifact
+      - name: Upload iOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/ios/ipa/Runner.ipa
+
+      #  Publish IPA to a GitHub release
+      - name: Push to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: build/ios/ipa/Runner.ipa
+          tag: v1.0.${{ github.run_number }}
 
 
         # # publish to Releases
@@ -100,23 +131,3 @@ jobs:
     #       tag: v1.0.${{ github.run_number }} 
 
 
-      # ✅ Create the IPA file manually
-      - name: Create IPA
-        run: |
-          mkdir -p build/ios/ipa
-          cd build/ios/iphoneos
-          zip -r ../ipa/Runner.ipa Runner.app
-
-      # ✅ Upload the IPA file as an artifact
-      - name: Upload iOS Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
-          path: build/ios/ipa/Runner.ipa
-
-      # ✅ Optional: Attach IPA to a GitHub release
-      - name: Push to Releases
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: build/ios/ipa/Runner.ipa
-          tag: v1.0.${{ github.run_number }}
