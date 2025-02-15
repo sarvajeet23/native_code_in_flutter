@@ -127,4 +127,6 @@ jobs:
           name: Android
           artifacts: "build/app/outputs/apk/release/*.apk"
           tag: v1.0.${{ github.run_number }}
-          token: ${{ github.token }}
+          token: ${{ secrets.IOS_BUILD }}
+          replacesArtifacts: true
+            
