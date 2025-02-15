@@ -83,6 +83,12 @@ jobs:
         # uses: ncipollo/release-action@v1
 
 
+      # ✅ Upload the IPA file as an artifact
+      - name: Upload iOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/ios/ipa/Runner.ipa
 
 
 
@@ -91,4 +97,4 @@ jobs:
         with:
           name: ios-build
           artifacts: build/ios/iphoneos/
-          tag: v1.0.${{ github.run_number }}  # ✅ Corrected output path
+          tag: v1.0.${{ github.run_number }} 
