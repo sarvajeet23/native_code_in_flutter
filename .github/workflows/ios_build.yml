@@ -84,12 +84,12 @@ jobs:
           cd build/ios/iphoneos
           zip -r ../ipa/Runner.ipa Runner.app
 
-      # ✅ Upload the IPA file as an artifact
-      - name: Upload iOS Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
-          path: build/ios/ipa/Runner.ipa
+    #   # ✅ Upload the IPA file as an artifact
+    #   - name: Upload iOS Build Artifacts
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: ios-build
+    #       path: build/ios/ipa/Runner.ipa
 
       #  Publish IPA to a GitHub release
       - name: Push to Releases
