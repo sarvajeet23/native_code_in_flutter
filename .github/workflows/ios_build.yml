@@ -7,19 +7,37 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macos-latest  # Ensure using macOS for iOS builds
+    runs-on: macos-latest  # Ensures macOS is used for iOS builds
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ✅ Cache Flutter SDK
+      - name: Cache Flutter SDK
+        uses: actions/cache@v4
+        with:
+          path: /Users/runner/hostedtoolcache/flutter
+          key: flutter-macos-stable-3.29.0-arm64
+          restore-keys: |
+            flutter-macos-stable-
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'  # ✅ Explicitly use the latest stable version
+          flutter-version: '3.29.0'
           cache: true
 
       - name: Check Flutter Version
         run: flutter --version  # ✅ Debug step to check installed version
+
+      # ✅ Cache Dart & Flutter dependencies
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: flutter-deps-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            flutter-deps-${{ runner.os }}-
 
       - name: Install dependencies
         run: flutter pub get
@@ -27,19 +45,27 @@ jobs:
       - name: Verify Dart Version
         run: dart --version  # ✅ Debug step to confirm Dart version
 
-      - name: Install CocoaPods
+      # ✅ Cache CocoaPods to speed up iOS builds
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      - name: Install CocoaPods dependencies
         run: |
           cd ios
-          pod install
-          cd ..
+          pod install --repo-update
 
-      - name: Build iOS
+      - name: Build iOS (No Codesign)
         env:
-          APP_STORE_TOKEN: ${{ secrets.ISO_BUILD }}  # Ensure this secret exists
-        run: flutter build ios --release
+          APP_STORE_TOKEN: ${{ secrets.IOS_BUILD }}  # Ensure correct secret name
+        run: flutter build ios --no-codesign
 
-      - name: Upload iOS build artifacts
+      - name: Upload iOS Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: build/ios/iphoneos
+          path: build/ios/ipa/
