@@ -15,7 +15,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'  # ✅ Explicit version to avoid "unable to determine version" error
+          flutter-version: '3.19.2'  # ✅ Use a Flutter version that supports Dart 3.7+
 
       - name: Install dependencies
         run: flutter pub get
