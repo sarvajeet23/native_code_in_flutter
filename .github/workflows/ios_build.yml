@@ -92,10 +92,23 @@ jobs:
     #       path: build/ios/ipa/Runner.ipa
 
       #  Publish IPA to a GitHub release
-      - name: Push to Releases
+      - name: Push to Releases on GitHub
         uses: ncipollo/release-action@v1
         with:
-          artifacts: build/ios/ipa/Runner.ipa
+           name: Iso-IPA
+           artifacts: build/ios/ipa/Runner.ipa
+           tag: v1.0.${{ github.run_number }}
+
+      # ✅ Build Android APK
+      - name: Build APK (Release)
+        run: flutter build apk --release
+
+      # ✅ Publish APk to a GitHub release
+      - name: Push to Releases on GitHub
+        uses: ncipollo/release-action@v1
+        with:
+          name: android-apk
+          artifacts: build/app/outputs/flutter-apk/app-release.apk
           tag: v1.0.${{ github.run_number }}
 
 
