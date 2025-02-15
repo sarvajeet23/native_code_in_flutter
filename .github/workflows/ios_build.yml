@@ -77,10 +77,18 @@ jobs:
           APP_STORE_TOKEN: ${{ secrets.IOS_BUILD }}  # Ensure correct secret name
         run: flutter build ios --no-codesign
 
-        
+
+        # # publish to Releases
+        # - name: Push to Releases
+        # uses: ncipollo/release-action@v1
+
+
+
+
 
       - name: Upload iOS Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: ncipollo/release-action@v1
         with:
           name: ios-build
-          path: build/ios/iphoneos/  # ✅ Corrected output path
+          artifacts: build/ios/iphoneos/
+          tag: v1.0.${{ github.run_number }}  # ✅ Corrected output path
