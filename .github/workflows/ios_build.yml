@@ -3,15 +3,16 @@ name: iOS Build
 on:
   push:
     branches:
-      - master
+      - master  # Adjust based on your default branch
 
 jobs:
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-latest  # Ensures macOS is used for iOS builds
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ✅ Cache Flutter SDK
       - name: Cache Flutter SDK
         uses: actions/cache@v4
         with:
@@ -27,8 +28,9 @@ jobs:
           cache: true
 
       - name: Check Flutter Version
-        run: flutter --version
+        run: flutter --version  # ✅ Debug step to check installed version
 
+      # ✅ Cache Dart & Flutter dependencies
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
         with:
@@ -41,8 +43,9 @@ jobs:
         run: flutter pub get
 
       - name: Verify Dart Version
-        run: dart --version
+        run: dart --version  # ✅ Debug step to confirm Dart version
 
+      # ✅ Cache CocoaPods to speed up iOS builds
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
@@ -51,6 +54,7 @@ jobs:
           restore-keys: |
             pods-${{ runner.os }}-
 
+      # ✅ Ensure iOS Directory & Generate Podfile if Missing
       - name: Ensure iOS directory & generate Podfile if missing
         run: |
           if [ ! -d "ios" ]; then
@@ -61,28 +65,21 @@ jobs:
             cd ios && pod init && cd ..
           fi
 
-      - name: Set iOS Deployment Target
+      # ✅ Install CocoaPods Dependencies
+      - name: Install CocoaPods dependencies
         run: |
-          sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = .*/IPHONEOS_DEPLOYMENT_TARGET = 13.0;/g' ios/Runner.xcodeproj/project.pbxproj
-          cd ios && pod install --repo-update
+          cd ios
+          test -f Podfile || pod init  # Ensure Podfile exists
+          pod install --repo-update
 
       - name: Build iOS (No Codesign)
         env:
-          APP_STORE_TOKEN: ${{ secrets.IOS_BUILD }}
+          APP_STORE_TOKEN: ${{ secrets.IOS_BUILD }}  # Ensure correct secret name
         run: flutter build ios --no-codesign
 
-      - name: Build iOS IPA
-        run: flutter build ipa --release
-
-      - name: Push to Releases
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/ios/ipa/*.ipa"
-          tag: v1.0.${{ github.run_number }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload iOS Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: build/ios/ipa/*.ipa
+          path: build/ios/iphoneos/  # ✅ Corrected output path
