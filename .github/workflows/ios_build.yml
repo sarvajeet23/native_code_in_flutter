@@ -75,7 +75,7 @@ jobs:
       - name: Build iOS (No Codesign)
         env:
           APP_STORE_TOKEN: ${{ secrets.IOS_BUILD }}  # Ensure correct secret name
-        run: flutter build ios --no-codesign
+        run: flutter build ios --release
 
 
       - name: Upload iOS Build Artifacts
