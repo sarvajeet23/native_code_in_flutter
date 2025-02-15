@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: build/ios/ipa/Runner.ipa
+          path: build/ios/iphoneos/Runner.app
 
 
 
@@ -96,5 +96,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ios-build
-          artifacts: build/ios/iphoneos/Runner.ipa
+          artifacts: build/ios/iphoneos/Runner.app
           tag: v1.0.${{ github.run_number }} 
