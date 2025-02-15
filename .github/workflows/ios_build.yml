@@ -125,6 +125,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Android
-          artifacts: build/app/outputs/flutter-apk/app-release.apk
+          artifacts: "build/app/outputs/apk/release/*.apk"
           tag: v1.0.${{ github.run_number }}
-          token: ${{ secrets.IOS_BUILD }}
+          token: ${{ github.token }}
