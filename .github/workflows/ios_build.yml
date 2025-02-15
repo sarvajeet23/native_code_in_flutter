@@ -3,11 +3,11 @@ name: iOS Build
 on:
   push:
     branches:
-      - main  # Change this to your branch name
+      - master  # Change this if your branch is different
 
 jobs:
   build-ios:
-    runs-on: macos-latest  # Use GitHub's macOS runner
+    runs-on: macos-latest  # Use GitHub macOS runner
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,6 +27,8 @@ jobs:
           cd ..
 
       - name: Build iOS
+        env:
+          APP_STORE_TOKEN: ${{ secrets.ISO_BUILD }}  # Using a token (if needed)
         run: flutter build ios --release
 
       - name: Upload iOS build artifacts
