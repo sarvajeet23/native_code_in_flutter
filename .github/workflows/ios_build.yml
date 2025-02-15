@@ -3,22 +3,29 @@ name: iOS Build
 on:
   push:
     branches:
-      - master  # Change this if your branch is different
+      - master  # Adjust based on your default branch
 
 jobs:
   build-ios:
-    runs-on: macos-latest  # Use GitHub macOS runner
+    runs-on: macos-latest  # Ensure using macOS for iOS builds
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # Updated to latest version
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.2'  # ✅ Use a Flutter version that supports Dart 3.7+
+          flutter-version: '3.19.6'  # ✅ Explicitly use the latest stable version
+          cache: true
+
+      - name: Check Flutter Version
+        run: flutter --version  # ✅ Debug step to check installed version
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Verify Dart Version
+        run: dart --version  # ✅ Debug step to confirm Dart version
 
       - name: Install CocoaPods
         run: |
@@ -28,11 +35,11 @@ jobs:
 
       - name: Build iOS
         env:
-          APP_STORE_TOKEN: ${{ secrets.ISO_BUILD }}  # Ensure the secret is correctly set
+          APP_STORE_TOKEN: ${{ secrets.ISO_BUILD }}  # Ensure this secret exists
         run: flutter build ios --release
 
       - name: Upload iOS build artifacts
-        uses: actions/upload-artifact@v4  # ✅ Updated to latest version
+        uses: actions/upload-artifact@v4
         with:
           name: ios-build
           path: build/ios/iphoneos
