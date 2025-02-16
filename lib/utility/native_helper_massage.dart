@@ -8,11 +8,13 @@ class NativeHelperMassage extends GetxService {
     "com.example/native",
   );
 
-  static Future<String> getNativeMessage() async {
+  static Future<String> getNativeMessage(String message) async {
     try {
-      final String result = await _methodChannel.invokeMethod("getMessage");
-      log("result::$result");
-      return result;
+      final String response = await _methodChannel.invokeMethod("getMessage", {
+        "message": message,
+      });
+      log("result::$response");
+      return response;
     } on PlatformException catch (e) {
       return "Failed to get message: '${e.message}'";
     }

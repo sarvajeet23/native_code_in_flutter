@@ -1,41 +1,25 @@
 import 'dart:developer';
 
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:native_code_in_flutter/utility/native_payment.dart';
+
+import '../utility/native_helper_massage.dart';
 
 class NativeController extends GetxController {
-  static const MethodChannel _messageChannel = MethodChannel(
-    'com.example/native',
-  );
-  static const MethodChannel _paymentChannel = MethodChannel(
-    'com.example/payment',
-  );
+  var messages = "".obs;
+  var paymentStatus = "".obs;
 
-  var message = "Tap to fetch native message".obs;
-  var paymentStatus = "Tap to make a payment".obs;
-
-  /// Fetch message from Native (Kotlin)
-  Future<void> getMessage() async {
+  /// Submit form: Send message & process payment
+  void submit(String message, double payment) async {
     try {
-      final String? result = await _messageChannel.invokeMethod('getMessage');
-      log("message: $result");
-      message.value = result ?? "Failed to get message!";
+      final messageResponse = NativeHelperMassage.getNativeMessage(message);
+      messages.value = await messageResponse;
+      final paymentResponse = NativePayment.processPayment(payment);
+      paymentStatus.value = await paymentResponse ?? 'null';
     } catch (e) {
-      message.value = "Error: $e";
-    }
-  }
+      log("message$e");
 
-  /// Process payment in Native (Kotlin)
-  Future<void> processPayment(double amount) async {
-    try {
-      final String? response = await _paymentChannel.invokeMethod(
-        'processPayment',
-        {'amount': amount},
-      );
-      log("message::$response");
-      paymentStatus.value = response ?? "Payment failed!";
-    } catch (e) {
-      paymentStatus.value = "Error: $e";
+      throw Exception("not fill");
     }
   }
 }

@@ -97,7 +97,7 @@ jobs:
         with:
            name: iOS
            artifacts: |
-             build/app/outputs/flutter-apk/app-release.apk
+            #  build/app/outputs/flutter-apk/app-release.apk
              build/ios/ipa/Runner.ipa
            tag: v1.0.${{ github.run_number }}
 # # apk job
